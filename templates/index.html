@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Heart Disease Risk Estimator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+<main class="page">
+  <header class="intro">
+    <p class="kicker">Trained on the Kaggle Heart Failure Prediction dataset</p>
+    <h1>Heart disease risk estimator</h1>
+    <p class="lede">Enter a patient's clinical measurements below. The model — an SVM trained on eleven cardiac indicators — returns a likelihood estimate, not a diagnosis.</p>
+  </header>
+
+  {% if not ready %}
+  <div class="notice">
+    <strong>Model not trained yet.</strong>
+    Place <code>heart.csv</code> in this project folder, run <code>python train_model.py</code>, then reload this page.
+  </div>
+  {% endif %}
+
+  <form id="risk-form" class="panel" {% if not ready %}aria-disabled="true"{% endif %}>
+    <div class="field-grid">
+
+      <label class="field">
+        <span>Age</span>
+        <input type="number" name="Age" min="1" max="120" required value="54" />
+      </label>
+
+      <label class="field">
+        <span>Sex</span>
+        <select name="Sex" required>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Chest pain type</span>
+        <select name="ChestPainType" required>
+          <option value="ATA">Atypical angina</option>
+          <option value="NAP">Non-anginal pain</option>
+          <option value="ASY">Asymptomatic</option>
+          <option value="TA">Typical angina</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Resting blood pressure (mm Hg)</span>
+        <input type="number" name="RestingBP" min="0" max="250" required value="130" />
+      </label>
+
+      <label class="field">
+        <span>Cholesterol (mg/dl)</span>
+        <input type="number" name="Cholesterol" min="0" max="700" required value="220" />
+      </label>
+
+      <label class="field">
+        <span>Fasting blood sugar &gt; 120 mg/dl</span>
+        <select name="FastingBS" required>
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Resting ECG</span>
+        <select name="RestingECG" required>
+          <option value="Normal">Normal</option>
+          <option value="ST">ST-T wave abnormality</option>
+          <option value="LVH">Left ventricular hypertrophy</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Max heart rate achieved</span>
+        <input type="number" name="MaxHR" min="40" max="250" required value="140" />
+      </label>
+
+      <label class="field">
+        <span>Exercise-induced angina</span>
+        <select name="ExerciseAngina" required>
+          <option value="N">No</option>
+          <option value="Y">Yes</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Oldpeak (ST depression)</span>
+        <input type="number" name="Oldpeak" min="-3" max="7" step="0.1" required value="1.0" />
+      </label>
+
+      <label class="field">
+        <span>ST slope</span>
+        <select name="ST_Slope" required>
+          <option value="Up">Up</option>
+          <option value="Flat">Flat</option>
+          <option value="Down">Down</option>
+        </select>
+      </label>
+
+    </div>
+
+    <button type="submit" id="submit-btn" {% if not ready %}disabled{% endif %}>Estimate risk</button>
+  </form>
+
+  <section id="result" class="result" hidden>
+    <div class="result-head">
+      <span id="result-label" class="result-label"></span>
+      <span id="result-pct" class="result-pct"></span>
+    </div>
+    <div class="meter">
+      <div id="meter-fill" class="meter-fill"></div>
+    </div>
+    <p class="disclaimer">This is a statistical estimate from a small training set, not a medical diagnosis. Talk to a clinician about any cardiac risk factors.</p>
+  </section>
+
+  <p id="error" class="error" hidden></p>
+</main>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
